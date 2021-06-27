@@ -1,9 +1,13 @@
-import { Card, CardActions, CardContent, CardHeader, Typography, Button } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
+import { Card, CardActions, CardContent, CardHeader, Typography, Button, Grid } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const MedicalOffice = (props) => {
+    const history = useHistory();
+    const auth = useSelector((state) => state.auth);
+
     return (
-        <Card raised>
+        <Card style={{ textAlign: "center" }} raised>
             <CardHeader title={props.name} />
             <CardContent>
                 <Typography>
@@ -17,19 +21,27 @@ const MedicalOffice = (props) => {
                 <Typography>Specialty: {props.specialty.name}</Typography>
             </CardContent>
             <CardActions>
-                <Button
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                        props.history.push(`/medical-offices/${props.id}`);
-                    }}
-                >
-                    Find Out More
-                </Button>
+                <Grid container justify="center">
+                    <Grid item>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                if (auth.isLoggedIn) {
+                                    history.push(`/medical-offices/${props.id}`);
+                                } else {
+                                    history.push(`/login`);
+                                }
+                            }}
+                        >
+                            Visit
+                        </Button>
+                    </Grid>
+                </Grid>
             </CardActions>
         </Card>
     );
 };
 
-export default withRouter(MedicalOffice);
+export default MedicalOffice;

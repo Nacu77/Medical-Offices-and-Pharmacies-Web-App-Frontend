@@ -9,7 +9,7 @@ const Medicines = (props) => {
             {props.medicines.map((medicine) => (
                 <Grid item key={medicine.id} xs={6} sm={4} md={3}>
                     {props.for === "medicines" && <Medicine {...medicine} />}
-                    {props.for === "pharmacy" && <MedicineStock {...medicine} />}
+                    {props.for === "pharmacy" && <MedicineStock {...medicine} handleDelete={props.handleDelete} />}
                 </Grid>
             ))}
         </Grid>

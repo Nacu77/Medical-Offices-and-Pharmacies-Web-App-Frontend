@@ -6,7 +6,7 @@ const Pharmacies = (props) => {
     return (
         <Grid container spacing={4} justify="center">
             {props.pharmacies.map((pharmacy) => (
-                <Grid item key={pharmacy.id} xs={6} sm={4} md={3}>
+                <Grid item key={pharmacy.id} xs={12} md={6}>
                     <Pharmacy {...pharmacy} />
                 </Grid>
             ))}

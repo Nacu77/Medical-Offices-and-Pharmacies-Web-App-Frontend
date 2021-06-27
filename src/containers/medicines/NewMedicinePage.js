@@ -2,8 +2,9 @@ import { Formik, Form, Field } from "formik";
 import { Button, Container, LinearProgress, Card, CardHeader, CardContent, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "formik-material-ui";
-import axios from "axios";
-import { withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
+import axios from "../../axios";
 
 const useStyles = makeStyles((theme) => ({
     porgressbar: {
@@ -13,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NewMedicinePage = (props) => {
     const classes = useStyles();
+    const history = useHistory();
 
     return (
         <Container>
@@ -37,15 +39,21 @@ const NewMedicinePage = (props) => {
                                     return errors;
                                 }}
                                 onSubmit={(values, { setSubmitting }) => {
-                                    axios.post("http://localhost:8080/api/medicines", values).then(
-                                        (res) => {
-                                            setSubmitting(false);
-                                            props.history.push("/medicines");
-                                        },
-                                        (err) => {
-                                            console.log(err);
-                                        }
-                                    );
+                                    if (props.customOnSubmit) {
+                                        props.customOnSubmit(values);
+                                        setSubmitting(false);
+                                    } else {
+                                        axios.post("/medicines", values).then(
+                                            (res) => {
+                                                setSubmitting(false);
+                                                history.push("/medicines");
+                                            },
+                                            (err) => {
+                                                setSubmitting(false);
+                                                console.log(err);
+                                            }
+                                        );
+                                    }
                                 }}
                             >
                                 {({ submitForm, isSubmitting }) => (
@@ -71,4 +79,4 @@ const NewMedicinePage = (props) => {
     );
 };
 
-export default withRouter(NewMedicinePage);
+export default NewMedicinePage;

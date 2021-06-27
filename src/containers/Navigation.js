@@ -1,6 +1,5 @@
-import { useState } from "react";
 import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
+import { useTheme, makeStyles } from "@material-ui/core/styles";
 import {
     Drawer,
     AppBar,
@@ -13,11 +12,13 @@ import {
     Divider,
     IconButton,
 } from "@material-ui/core";
-import { Menu, ChevronLeft, ChevronRight, LocalHospital, LocalPharmacy, Healing, Home } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
-import { withRouter } from "react-router-dom";
+import { Menu, ChevronLeft, ChevronRight, LocalHospital, LocalPharmacy, Healing, Home, Notes, Note } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-const drawerWidth = 240;
+import { logoutUser } from "../services/index";
+
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -55,36 +56,18 @@ const useStyles = makeStyles((theme) => ({
         ...theme.mixins.toolbar,
         justifyContent: "flex-end",
     },
-    content: {
-        flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: -drawerWidth,
-    },
-    contentShift: {
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
+    menuTypography: {
+        cursor: "pointer",
+        marginRight: theme.spacing(4),
     },
 }));
 
 const Navigation = (props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = useState(false);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+    const history = useHistory();
+    const auth = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
 
     const pages = [
         {
@@ -109,21 +92,92 @@ const Navigation = (props) => {
         },
     ];
 
+    const rolePages = [
+        {
+            name: "My Medical Offices",
+            link: "/my-medical-offices",
+            icon: <LocalHospital />,
+            role: "doctor",
+        },
+        {
+            name: "My Appointments",
+            link: "/my-appointments",
+            icon: <Notes />,
+            role: "patient",
+        },
+        {
+            name: "My Recipes",
+            link: "/my-recipes",
+            icon: <Note />,
+            role: "patient",
+        },
+        {
+            name: "My Pharmacies",
+            link: "/my-pharmacies",
+            icon: <LocalPharmacy />,
+            role: "pharmacy_owner",
+        },
+    ];
+
+    let authLinks;
+    if (auth.isLoggedIn) {
+        authLinks = (
+            <Typography
+                variant="h6"
+                noWrap
+                onClick={() => {
+                    dispatch(logoutUser());
+                    history.push("/logout");
+                }}
+                style={{ marginLeft: "auto" }}
+                className={classes.menuTypography}
+            >
+                Logout
+            </Typography>
+        );
+    } else {
+        authLinks = (
+            <>
+                <Typography
+                    variant="h6"
+                    noWrap
+                    onClick={() => {
+                        history.push("/register");
+                    }}
+                    style={{ marginLeft: "auto" }}
+                    className={classes.menuTypography}
+                >
+                    Register
+                </Typography>
+                <Typography
+                    variant="h6"
+                    noWrap
+                    onClick={() => {
+                        history.push("/login");
+                    }}
+                    className={classes.menuTypography}
+                >
+                    Login
+                </Typography>
+            </>
+        );
+    }
+
     return (
         <>
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
+                    [classes.appBarShift]: props.open,
                 })}
             >
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
+                        onClick={props.handleDrawerOpen}
                         edge="start"
-                        className={clsx(classes.menuButton, open && classes.hide)}
+                        className={clsx(classes.menuButton, props.open && classes.hide)}
                     >
                         <Menu />
                     </IconButton>
@@ -131,11 +185,13 @@ const Navigation = (props) => {
                         variant="h6"
                         noWrap
                         onClick={() => {
-                            props.history.push("/");
+                            history.push("/");
                         }}
+                        className={classes.menuTypography}
                     >
                         Medical Offices
                     </Typography>
+                    {authLinks}
                 </Toolbar>
             </AppBar>
 
@@ -143,13 +199,13 @@ const Navigation = (props) => {
                 className={classes.drawer}
                 variant="persistent"
                 anchor="left"
-                open={open}
+                open={props.open}
                 classes={{
                     paper: classes.drawerPaper,
                 }}
             >
                 <div className={classes.drawerHeader}>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === "ltr" ? <ChevronLeft /> : <ChevronRight />}
                     </IconButton>
                 </div>
@@ -161,7 +217,7 @@ const Navigation = (props) => {
                         <ListItem
                             button
                             onClick={() => {
-                                props.history.push(page.link);
+                                history.push(page.link);
                             }}
                             key={page.name}
                         >
@@ -172,9 +228,36 @@ const Navigation = (props) => {
                 </List>
 
                 <Divider />
+
+                {auth.isLoggedIn && (
+                    <>
+                        <List>
+                            {rolePages.map((page) => {
+                                if (auth.role === page.role) {
+                                    return (
+                                        <ListItem
+                                            button
+                                            onClick={() => {
+                                                history.push(page.link);
+                                            }}
+                                            key={page.name}
+                                        >
+                                            <ListItemIcon>{page.icon}</ListItemIcon>
+                                            <ListItemText primary={page.name} />
+                                        </ListItem>
+                                    );
+                                } else {
+                                    return undefined;
+                                }
+                            })}
+                        </List>
+
+                        <Divider />
+                    </>
+                )}
             </Drawer>
         </>
     );
 };
 
-export default withRouter(Navigation);
+export default Navigation;

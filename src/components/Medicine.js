@@ -1,4 +1,4 @@
-import { Card, CardContent, CardActions, Typography, Button, CardMedia } from "@material-ui/core";
+import { Card, CardContent, Typography, CardMedia } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -20,13 +20,8 @@ const Medicine = (props) => {
         <Card className={classes.card} raised>
             <CardMedia className={classes.cardMedia} image={props.imageUrl} />
             <CardContent>
-                <Typography>{props.name}</Typography>
+                <Typography align="center">{props.name}</Typography>
             </CardContent>
-            <CardActions>
-                <Button size="small" variant="contained" color="primary">
-                    Find In Pharmacies
-                </Button>
-            </CardActions>
         </Card>
     );
 };

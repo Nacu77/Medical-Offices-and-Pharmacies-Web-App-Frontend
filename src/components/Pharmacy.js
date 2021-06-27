@@ -1,9 +1,13 @@
-import { Card, CardActions, CardContent, CardHeader, Typography, Button } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
+import { Card, CardActions, CardContent, CardHeader, Typography, Button, Grid } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Pharmacy = (props) => {
+    const history = useHistory();
+    const auth = useSelector((state) => state.auth);
+
     return (
-        <Card raised>
+        <Card style={{ textAlign: "center" }} raised>
             <CardHeader title={props.name} />
             <CardContent>
                 <Typography>
@@ -15,19 +19,25 @@ const Pharmacy = (props) => {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                        props.history.push(`/pharmacies/${props.id}`);
-                    }}
-                >
-                    Find Out More
-                </Button>
+                <Grid container justify="center">
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            if (auth.isLoggedIn) {
+                                history.push(`/pharmacies/${props.id}`);
+                            } else {
+                                history.push(`/login`);
+                            }
+                        }}
+                    >
+                        Visit
+                    </Button>
+                </Grid>
             </CardActions>
         </Card>
     );
 };
 
-export default withRouter(Pharmacy);
+export default Pharmacy;
