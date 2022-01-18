@@ -11,10 +11,16 @@ const CustomRoute = (props) => {
             case "doctor":
             case "patient":
             case "pharmacy_owner":
-                return setReturnedRoute(auth.role === props.condition ? <Route {...props} /> : <Redirect to="/" />);
+                return setReturnedRoute(
+                    auth.role === props.condition || auth.role === "admin" ? <Route {...props} /> : <Redirect to="/" />
+                );
             case "doctor || pharmacy_owner":
                 return setReturnedRoute(
-                    auth.role === "doctor" || auth.role === "pharmacy_owner" ? <Route {...props} /> : <Redirect to="/" />
+                    auth.role === "doctor" || auth.role === "pharmacy_owner" || auth.role === "admin" ? (
+                        <Route {...props} />
+                    ) : (
+                        <Redirect to="/" />
+                    )
                 );
             case "isLoggedIn":
                 return setReturnedRoute(auth.isLoggedIn ? <Route {...props} /> : <Redirect to="/" />);

@@ -46,7 +46,7 @@ const PharmacyPage = (props) => {
             });
     };
 
-    const isHisPharmacy = auth.role === "pharmacy_owner" && auth.user.pharmacyOwner.id === owner.id;
+    const isHisPharmacy = (auth.role === "pharmacy_owner" && auth.user.pharmacyOwner.id === owner.id) || auth.role === "admin";
 
     return pharmacy ? (
         <Container>

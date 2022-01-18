@@ -65,7 +65,7 @@ const MedicinesPage = (props) => {
                 <Grid item>
                     <TextField label="Medicine Name" variant="outlined" onChange={inputChangedHandler} />
                 </Grid>
-                {(auth.role === "doctor" || auth.role === "pharmacy_owner") && (
+                {(auth.role === "doctor" || auth.role === "pharmacy_owner" || auth.role === "admin") && (
                     <Grid item>
                         <Button
                             variant="contained"

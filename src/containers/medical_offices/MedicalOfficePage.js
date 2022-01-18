@@ -205,7 +205,7 @@ const MedicalOfficePage = (props) => {
         );
     }
 
-    const isHisOffice = auth.role === "doctor" && auth.user.doctor.id === doctor.id;
+    const isHisOffice = (auth.role === "doctor" && auth.user.doctor.id === doctor.id) || auth.role === "admin";
 
     return medicalOffice ? (
         <Container>
